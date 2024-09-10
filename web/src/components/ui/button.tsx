@@ -1,8 +1,8 @@
-import { forwardRef, type ComponentProps } from 'react'
-import { tv, type VariantProps } from 'tailwind-variants'
+import { type ComponentProps, forwardRef } from 'react';
+import { type VariantProps, tv } from 'tailwind-variants';
 
 const button = tv({
-  base: 'flex items-center justify-center gap-2 rounded-lg text-sm font-medium tracking-tight outline-none ring-offset-2 ring-offset-black focus-visible:ring-2',
+  base: 'flex items-center justify-center gap-2 rounded-lg text-sm font-medium tracking-tight outline-none ring-offset-2 ring-offset-black focus-visible:ring-2 transition-colors',
 
   variants: {
     variant: {
@@ -21,9 +21,9 @@ const button = tv({
     variant: 'primary',
     size: 'default',
   },
-})
+});
 
-type ButtonProps = ComponentProps<'button'> & VariantProps<typeof button>
+type ButtonProps = ComponentProps<'button'> & VariantProps<typeof button>;
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, ...props }, ref) => {
@@ -33,8 +33,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={button({ variant, size, className })}
       />
-    )
+    );
   }
-)
+);
 
-Button.displayName = 'Button'
+Button.displayName = 'Button';
