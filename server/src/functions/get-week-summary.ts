@@ -31,14 +31,15 @@ export async function getWeekSumary() {
 	const goalsCompletedInWeek = db.$with("goal_completion_counts").as(
 		db
 			.select({
-				id: goals.id,
+				id: goalCompletions.id,
 				title: goals.title,
-				completedAt: goals.createdAt,
+				completedAt: goalCompletions.createdAt,
 				completedAtDate: sql`DATE(${goalCompletions.createdAt})`.as(
 					"completedAtDate",
 				),
 			})
 			.from(goalCompletions)
+			.orderBy(desc(goalCompletions.createdAt))
 			.innerJoin(goals, eq(goals.id, goalCompletions.goalId))
 			.where(
 				and(
