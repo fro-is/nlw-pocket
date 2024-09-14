@@ -18,6 +18,11 @@ type Goal = {
 	completionCount: number;
 };
 
+type CreateGoalRequest = {
+	title: string;
+	desiredWeeklyFrequency: number;
+};
+
 export const fetchGoalsSummary = async (): Promise<GoalsSummary> => {
 	const response = await fetch("http://localhost:3333/goals/summary");
 	const { data } = await response.json();
@@ -30,4 +35,32 @@ export const getPendingGoals = async (): Promise<Goal[]> => {
 	const { data } = await response.json();
 
 	return data;
+};
+
+export const createGoalCompletion = async (goalId: string) => {
+	await fetch("http://localhost:3333/completions", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			goalId,
+		}),
+	});
+};
+
+export const createGoal = async ({
+	title,
+	desiredWeeklyFrequency,
+}: CreateGoalRequest) => {
+	await fetch("http://localhost:3333/goals", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			title,
+			desiredWeeklyFrequency,
+		}),
+	});
 };

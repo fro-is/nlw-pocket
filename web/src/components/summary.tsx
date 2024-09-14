@@ -83,7 +83,7 @@ export function Summary() {
 								<span className="text-zinc-400 text-xs">({formattedDate})</span>
 							</h3>
 
-							<ul className="flex flex-col gap-3">
+							<ul className="flex flex-col gap-3 transition-all">
 								{goals.map((goal) => {
 									const goalTime = dayjs(goal.completedAt).format("HH:mm");
 
