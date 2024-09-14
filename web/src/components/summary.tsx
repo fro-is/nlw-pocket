@@ -4,8 +4,8 @@ import { Button } from "./ui/button";
 import { DialogTrigger } from "./ui/dialog";
 import { Progress, ProgressIndicator } from "./ui/progress-bar";
 import { Separator } from "./ui/separator";
-import { useQuery } from "@tanstack/react-query";
-import { fetchGoalsSummary } from "../services/api";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { deleteGoalCompletion, fetchGoalsSummary } from "../services/api";
 import dayjs from "dayjs";
 import ptBR from "dayjs/locale/pt-br";
 import { PendingGoals } from "./pending-goals";
@@ -13,6 +13,8 @@ import { PendingGoals } from "./pending-goals";
 dayjs.locale(ptBR);
 
 export function Summary() {
+	const queryClient = useQueryClient();
+
 	const { data: summary, isLoading } = useQuery({
 		queryFn: fetchGoalsSummary,
 		queryKey: ["goals-summary"],
@@ -33,6 +35,12 @@ export function Summary() {
 	const completedPercentage = Math.round(
 		(summary.completed / summary.total) * 100,
 	);
+
+	const handleUndoGoalCompletion = async (goalCompletionId: string) => {
+		await deleteGoalCompletion(goalCompletionId);
+		queryClient.invalidateQueries({ queryKey: ["goals-summary"] });
+		queryClient.invalidateQueries({ queryKey: ["pending-goals"] });
+	};
 
 	return (
 		<div className="py-10 px-5 mx-auto max-w-[480px] h-screen flex flex-col gap-6">
@@ -84,17 +92,18 @@ export function Summary() {
 							</h3>
 
 							<ul className="flex flex-col gap-3 transition-all">
-								{goals.map((goal) => {
-									const goalTime = dayjs(goal.completedAt).format("HH:mm");
+								{goals.map((goalCompletion) => {
+									const goalTime = dayjs(goalCompletion.completedAt).format("HH:mm");
 
 									return (
-										<li key={goal.id} className="flex items-center gap-2">
+										<li key={goalCompletion.id} className="flex items-center gap-2">
 											<CheckCircle2 className="size-4 text-pink-500" />
 											<span className="text-sm text-zinc-400">
 												Você completou "
-												<b className="text-zinc-100">{goal.title}</b>" às{" "}
+												<b className="text-zinc-100">{goalCompletion.title}</b>" às{" "}
 												<b className="text-zinc-100">{goalTime}</b>
 											</span>
+											<Button size="xs" variant="text" onClick={() => handleUndoGoalCompletion(goalCompletion.id)}>Desfazer</Button>
 										</li>
 									);
 								})}
